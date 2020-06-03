@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/webrtc-react/static/css/main.5f361e03.chunk.css",
+    "main.js": "/webrtc-react/static/js/main.50d3b8d6.chunk.js",
+    "main.js.map": "/webrtc-react/static/js/main.50d3b8d6.chunk.js.map",
+    "runtime-main.js": "/webrtc-react/static/js/runtime-main.2b631a07.js",
+    "runtime-main.js.map": "/webrtc-react/static/js/runtime-main.2b631a07.js.map",
+    "static/js/2.d563e810.chunk.js": "/webrtc-react/static/js/2.d563e810.chunk.js",
+    "static/js/2.d563e810.chunk.js.map": "/webrtc-react/static/js/2.d563e810.chunk.js.map",
+    "index.html": "/webrtc-react/index.html",
+    "precache-manifest.97f18c0db899c503afae23e825e9d7cf.js": "/webrtc-react/precache-manifest.97f18c0db899c503afae23e825e9d7cf.js",
+    "service-worker.js": "/webrtc-react/service-worker.js",
+    "static/css/main.5f361e03.chunk.css.map": "/webrtc-react/static/css/main.5f361e03.chunk.css.map",
+    "static/js/2.d563e810.chunk.js.LICENSE.txt": "/webrtc-react/static/js/2.d563e810.chunk.js.LICENSE.txt",
+    "static/media/logo.svg": "/webrtc-react/static/media/logo.5d5d9eef.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.2b631a07.js",
+    "static/js/2.d563e810.chunk.js",
+    "static/css/main.5f361e03.chunk.css",
+    "static/js/main.50d3b8d6.chunk.js"
+  ]
+}
