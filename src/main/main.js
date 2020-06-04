@@ -88,7 +88,7 @@ class Main extends Component {
             if (parts[0] === 'https') {
                 port = 443;
             }
-            path = parts[1].replace('//', '');
+            path = parts[1].replace('//', '').replace('/', '');
         }
         await this.setState({
             peerServerPath: path,
