@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import Peer from 'peerjs';
 import RandonString from 'randomstring'
 
-let localVideoStream;
-let remoteStream;
 let localStream;
 class Main extends Component {
 
@@ -34,7 +32,7 @@ class Main extends Component {
     }
 
     componentDidMount() {
-
+        this.initPeerConnectionAuto();
     }
 
     async initPeerConnection() {
@@ -112,17 +110,13 @@ class Main extends Component {
     async initLocalVideo() {
         try {
             if (this.state.videoOn || this.state.audioOn) {
-                localVideoStream = await navigator.mediaDevices.getUserMedia({
-                    video: this.state.videoOn, audio: false
-                })
                 localStream = await navigator.mediaDevices.getUserMedia({
                     video: this.state.videoOn, audio: this.state.audioOn
                 })
             } else {
                 localStream = null;
-                localVideoStream = null;
             }
-            this.localVideo.srcObject = localVideoStream;
+            this.localVideo.srcObject = localStream;
             this.setState({ webCamON: true });
         } catch (ex) {
             console.log(ex);
@@ -195,13 +189,13 @@ class Main extends Component {
                             Enter Message to send:<input type="text" value={this.state.message} onChange={this.updateMessage} name="message"></input>
                             <button onClick={this.sendMessage}>Send</button>
                         </div>) : ''}
-                        <video ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay src={localVideoStream} muted></video>
+                        {this.state.connected ? (<video id="remoteVideo" ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>) : ''}
+                        <video ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay src={localStream} muted></video>
                         <br />
                         <div>
                             <button onClick={this.handleVideoToggle}>Video {this.state.videoOn ? ' Off' : ' On'}</button>
                             <button onClick={this.handleAudioToggle}>Audio {this.state.audioOn ? ' Off' : ' On'}</button>
                         </div>
-                        {this.state.connected ? (<video id="remoteVideo" ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>) : ''}
                     </div>) : (
                         <div>
                             Enter Peer Server path: <input type="text" value={this.state.peerServerPath} onChange={this.updatePeerServerPath} name="peerServerPath"></input><br />
