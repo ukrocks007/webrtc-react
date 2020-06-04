@@ -17,7 +17,7 @@ class Main extends Component {
             connection: null,
             webCamON: false,
             videoOn: true,
-            audioOn: false,
+            audioOn: true,
             peerServerPath: '',
             port: ''
         }
@@ -195,13 +195,13 @@ class Main extends Component {
                             Enter Message to send:<input type="text" value={this.state.message} onChange={this.updateMessage} name="message"></input>
                             <button onClick={this.sendMessage}>Send</button>
                         </div>) : ''}
-                        <video ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay src={localVideoStream}></video>
+                        <video ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay src={localVideoStream} muted></video>
                         <br />
                         <div>
                             <button onClick={this.handleVideoToggle}>Video {this.state.videoOn ? ' Off' : ' On'}</button>
                             <button onClick={this.handleAudioToggle}>Audio {this.state.audioOn ? ' Off' : ' On'}</button>
                         </div>
-                        {this.state.connected ? (<video id="remoteVideo" ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay muted></video>) : ''}
+                        {this.state.connected ? (<video id="remoteVideo" ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>) : ''}
                     </div>) : (
                         <div>
                             Enter Peer Server path: <input type="text" value={this.state.peerServerPath} onChange={this.updatePeerServerPath} name="peerServerPath"></input><br />
