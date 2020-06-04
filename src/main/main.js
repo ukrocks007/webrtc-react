@@ -30,11 +30,11 @@ class Main extends Component {
         this.initPeerConnection = this.initPeerConnection.bind(this);
         this.updatePeerServerPath = this.updatePeerServerPath.bind(this);
         this.updatePort = this.updatePort.bind(this);
+        this.initPeerConnectionAuto = this.initPeerConnectionAuto.bind(this);
     }
 
     componentDidMount() {
-        let path = window.location.href;
-        console.log(path);
+
     }
 
     async initPeerConnection() {
@@ -66,6 +66,37 @@ class Main extends Component {
         });
         await this.setState({ peer: peer });
         this.initLocalVideo();
+    }
+
+    async initPeerConnectionAuto() {
+        debugger;
+        let path = window.location.href;
+        let port;
+        console.log(path);
+        let parts = path.split(':');
+        if (parts.length >= 3) {
+            if (parts[0] === 'http') {
+                port = parseInt(parts[2]);
+            }
+            if (parts[0] === 'https') {
+                port = 443;
+            }
+            path = parts[1].replace('//', '');
+        } else if (parts.length >= 2) {
+            if (parts[0] === 'http') {
+                port = 80;
+            }
+            if (parts[0] === 'https') {
+                port = 443;
+            }
+            path = parts[1].replace('//', '');
+        }
+        console.log(parts);
+        await this.setState({
+            peerServerPath: path,
+            port: port
+        })
+        this.initPeerConnection();
     }
 
     updatePeerServerPath(evt) {
@@ -177,7 +208,7 @@ class Main extends Component {
                         <div>
                             Enter Peer Server path: <input type="text" value={this.state.peerServerPath} onChange={this.updatePeerServerPath} name="peerServerPath"></input><br />
                             Enter Peer Port number:<input type="text" value={this.state.port} onChange={this.updatePort} name="port"></input><br />
-                            <button onClick={this.initPeerConnection}>Connect</button>
+                            <button onClick={this.initPeerConnection}>Connect</button><button onClick={this.initPeerConnectionAuto}>Auto</button>
                         </div>
                     )}
             </div>);
