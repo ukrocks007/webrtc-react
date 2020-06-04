@@ -81,19 +81,23 @@ class Main extends Component {
     }
 
     async initLocalVideo() {
-        if (this.state.videoOn || this.state.audioOn) {
-            localVideoStream = await navigator.mediaDevices.getUserMedia({
-                video: this.state.videoOn, audio: false
-            })
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: this.state.videoOn, audio: this.state.audioOn
-            })
-        } else {
-            localStream = null;
-            localVideoStream = null;
+        try {
+            if (this.state.videoOn || this.state.audioOn) {
+                localVideoStream = await navigator.mediaDevices.getUserMedia({
+                    video: this.state.videoOn, audio: false
+                })
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: this.state.videoOn, audio: this.state.audioOn
+                })
+            } else {
+                localStream = null;
+                localVideoStream = null;
+            }
+            this.localVideo.srcObject = localVideoStream;
+            this.setState({ webCamON: true });
+        } catch (ex) {
+            console.log(ex);
         }
-        this.localVideo.srcObject = localVideoStream;
-        this.setState({ webCamON: true });
     }
 
     async handleVideoToggle() {
