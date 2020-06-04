@@ -38,6 +38,7 @@ class Main extends Component {
     }
 
     async initPeerConnection() {
+        console.log(this.state.peerServerPath, this.state.port);
         var peer = new Peer(RandonString.generate(), { host: this.state.peerServerPath, port: this.state.port, path: '/chat' });
         peer.on('connection', (conn) => {
             this.setState({ connection: conn });
@@ -69,10 +70,8 @@ class Main extends Component {
     }
 
     async initPeerConnectionAuto() {
-        debugger;
         let path = window.location.href;
         let port;
-        console.log(path);
         let parts = path.split(':');
         if (parts.length >= 3) {
             if (parts[0] === 'http') {
@@ -91,7 +90,6 @@ class Main extends Component {
             }
             path = parts[1].replace('//', '');
         }
-        console.log(parts);
         await this.setState({
             peerServerPath: path,
             port: port
