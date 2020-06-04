@@ -1,0 +1,48 @@
+<html>
+
+<body>
+    <style>
+        #outgoing {
+            width: 600px;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+    </style>
+    <form>
+        <textarea id="incoming"></textarea>
+        <button type="submit">submit</button>
+    </form>
+    <pre id="outgoing"></pre>
+    <script src="simplepeer.min.js"></script>
+    <script>
+        const pInitiator = new SimplePeer({
+            initiator: true,
+            trickle: false
+        })
+
+        pInitiator.on('error', err => console.log('error', err))
+
+        pInitiator.on('signal', data => {
+            console.log('SIGNAL', JSON.stringify(data))
+            document.querySelector('#outgoing').textContent = JSON.stringify(data)
+        })
+
+        document.querySelector('form').addEventListener('submit', ev => {
+            ev.preventDefault()
+            pInitiator.signal(JSON.parse(document.querySelector('#incoming').value))
+        })
+
+        pInitiator.on('connect', () => {
+            console.log('CONNECT')
+            pInitiator.send('whatever' + Math.random())
+        })
+
+        pInitiator.on('data', data => {
+            console.log('data: ' + data)
+        })
+
+        const pReceiver = new SimplePeer();
+    </script>
+</body>
+
+</html>

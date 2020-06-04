@@ -5,14 +5,14 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 3001;
 
-// app.use(express.static(__dirname + '/build'));
+app.use(express.static(__dirname + '/simple-peer'));
 
-// var expressServer = app.listen(port);
-// var io = require('socket.io').listen(expressServer);
+var expressServer = app.listen(port);
+var io = require('socket.io').listen(expressServer);
 
 console.log('Listening on port', port);
 
-var peerServer = new PeerServer({ port: port, path: '/' });
+var peerServer = new PeerServer({ port: 9000, path: '/' });
 
 peerServer.on('connection', function (id) {
     //io.emit(Topics.USER_CONNECTED, id);
