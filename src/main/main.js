@@ -38,7 +38,7 @@ class Main extends Component {
     }
 
     async initPeerConnection() {
-        var peer = new Peer(RandonString.generate(), { host: this.state.peerServerPath, port: this.state.port, path: '/' });
+        var peer = new Peer(RandonString.generate(), { host: this.state.peerServerPath, port: this.state.port, path: '/chat' });
         peer.on('connection', (conn) => {
             this.setState({ connection: conn });
             conn.on('data', (data) => {

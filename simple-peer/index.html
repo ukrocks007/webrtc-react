@@ -15,33 +15,31 @@
     <pre id="outgoing"></pre>
     <script src="simplepeer.min.js"></script>
     <script>
-        const pInitiator = new SimplePeer({
-            initiator: true,
+        const p = new SimplePeer({
+            initiator: location.hash === '#1',
             trickle: false
         })
 
-        pInitiator.on('error', err => console.log('error', err))
+        p.on('error', err => console.log('error', err))
 
-        pInitiator.on('signal', data => {
+        p.on('signal', data => {
             console.log('SIGNAL', JSON.stringify(data))
             document.querySelector('#outgoing').textContent = JSON.stringify(data)
         })
 
         document.querySelector('form').addEventListener('submit', ev => {
             ev.preventDefault()
-            pInitiator.signal(JSON.parse(document.querySelector('#incoming').value))
+            p.signal(JSON.parse(document.querySelector('#incoming').value))
         })
 
-        pInitiator.on('connect', () => {
+        p.on('connect', () => {
             console.log('CONNECT')
-            pInitiator.send('whatever' + Math.random())
+            p.send('whatever' + Math.random())
         })
 
-        pInitiator.on('data', data => {
+        p.on('data', data => {
             console.log('data: ' + data)
         })
-
-        const pReceiver = new SimplePeer();
     </script>
 </body>
 
