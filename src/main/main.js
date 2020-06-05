@@ -1,13 +1,19 @@
 import React, { Component } from 'react'
 import Peer from 'peerjs';
 import RandonString from 'randomstring'
+import { Container, Row, Col, Navbar, Button, Form } from 'react-bootstrap';
+// npm install --save-dev @iconify/react @iconify/icons-logos
+import { Icon, InlineIcon } from '@iconify/react';
+import webrtcIcon from '@iconify/icons-logos/webrtc';
 
 let localStream;
+
 class Main extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            mode: '',
             peer: '',
             peerToConnect: '',
             connected: false,
@@ -37,7 +43,7 @@ class Main extends Component {
 
     async initPeerConnection() {
         console.log(this.state.peerServerPath, this.state.port);
-        var peer = new Peer(RandonString.generate(), { host: this.state.peerServerPath, port: this.state.port, path: '/chat' });
+        var peer = new Peer(RandonString.generate(6), { host: this.state.peerServerPath, port: this.state.port, path: '/chat' });
         peer.on('connection', (conn) => {
             this.setState({ connection: conn });
             conn.on('data', (data) => {
@@ -176,34 +182,74 @@ class Main extends Component {
     render() {
         return (
             <div>
-                {!!this.state.peer ?
-                    (<div>
-                        <h1>Hello, {this.state.peer._id}</h1>
-                        <div>
-                            Enter Peer id to connect: <input type="text" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect"></input>
-                            <button onClick={this.handleClick}>Connect</button>
-                        </div>
-                        <br />
-                        <br />
-                        {this.state.connected ? (<div>
-                            Enter Message to send:<input type="text" value={this.state.message} onChange={this.updateMessage} name="message"></input>
-                            <button onClick={this.sendMessage}>Send</button>
-                        </div>) : ''}
-                        {this.state.connected ? (<video id="remoteVideo" ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>) : ''}
-                        <video ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay src={localStream} muted></video>
-                        <br />
-                        <div>
-                            <button onClick={this.handleVideoToggle}>Video {this.state.videoOn ? ' Off' : ' On'}</button>
-                            <button onClick={this.handleAudioToggle}>Audio {this.state.audioOn ? ' Off' : ' On'}</button>
-                        </div>
-                    </div>) : (
-                        <div>
-                            Enter Peer Server path: <input type="text" value={this.state.peerServerPath} onChange={this.updatePeerServerPath} name="peerServerPath"></input><br />
-                            Enter Peer Port number:<input type="text" value={this.state.port} onChange={this.updatePort} name="port"></input><br />
-                            <button onClick={this.initPeerConnection}>Connect</button><button onClick={this.initPeerConnectionAuto}>Auto</button>
-                        </div>
-                    )}
-            </div>);
+                <div>
+                    <Navbar bg="secondary" variant="light" sticky="top" >
+                        <Navbar.Brand href="#home">
+                            <Icon icon={webrtcIcon} width="30"
+                                height="30"
+                                className="d-inline-block align-top" />{' '}
+                            WebRTC Based Video Calls
+                        </Navbar.Brand>
+                    </Navbar>
+                </div>
+                <Container fluid style={{ paddingLeft: '4%', paddingRight: '4%' }}>
+                    {
+                        !!this.state.peer && (this.state.connection ? '' :
+                            (<div>
+                                <Row>
+                                    <Col xs="6" sm="6" md="6" lg="6" >
+                                        <div className="introVideo">
+                                            <div className='homeVideo' style={{ backgroundColor: 'black', borderRadius: '6%' }}>
+                                                <video className='homeVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay src={localStream} muted></video>
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                <Button className="introControls" onClick={this.handleVideoToggle}>Video {this.state.videoOn ? ' Off' : ' On'}</Button>{' '}
+                                                <Button className="introControls" onClick={this.handleAudioToggle}>Audio {this.state.audioOn ? ' Off' : ' On'}</Button>
+                                            </div>
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <Row className="introMId">
+                                            <h3>Your Meeting Id: {this.state.peer._id}</h3>
+                                            <h4>Please share this meeing id with the participant to initiate the call.</h4>
+                                        </Row>
+                                        <center><hr />Or</center>
+                                        <Row className="introForm">
+                                            <Col></Col>
+                                            <Col>
+                                                <center>
+                                                    <Form>
+                                                        <Form.Group controlId="formBasicEmail">
+                                                            <Form.Label>Enter meeting id to join</Form.Label>
+                                                            <Form.Control type="text" placeholder="Meeting id" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect" />
+                                                        </Form.Group>
+                                                        <Button variant="primary" type="submit">
+                                                            Submit
+                                                </Button>
+                                                    </Form>
+                                                </center>
+                                            </Col>
+                                            <Col></Col>
+                                            {/* <center>
+                                                <h5>Enter meeting id to join:
+                                                    <input type="text" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect">
+                                                    </input>
+                                                </h5>
+                                                <Button className="introConnectButton" onClick={this.handleClick}>Connect</Button>
+                                            </center> */}
+                                            {/* <video id="remoteVideo" className='homeVideoRemote' ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>)} */}
+                                        </Row>
+                                    </Col>
+                                </Row>
+                            </div>))
+                    }
+                </Container>
+                <Navbar bg="light" variant="light" fixed="bottom" >
+                    <Navbar.Brand href="#home">
+                        {' '}By <a href="https://www.github.com/ukrocks007">Utkarsh Mehta</a>
+                    </Navbar.Brand>
+                </Navbar>
+            </div >);
     }
 }
 

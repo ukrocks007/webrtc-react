@@ -2,7 +2,7 @@ var express = require('express')
 const path = require('path');
 var app = express()
 
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 3001;
 
 app.use('/webrtc-react', express.static(path.join(__dirname, 'build')))
 app.use(express.static(path.join(__dirname, 'build')));
