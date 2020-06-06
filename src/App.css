@@ -11,12 +11,19 @@ video {
     border-radius: 5%;
 }
 
+.inCallLocalVideo {
+
+    z-index: 100;
+}
+
 .introConnectButton {
     margin: 3%;
 }
 
-.homeVideoRemote {
-    min-width: 100%;
+.inCallVideoRemote {
+    min-width: 80%;
+    border-radius: 0%;
+    z-index: -1;
 }
 
 .introMId {

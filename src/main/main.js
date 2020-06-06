@@ -58,11 +58,12 @@ class Main extends Component {
                 this.setState({ connected: true });
             });
         });
-        peer.on('call', call => {
-            this.setState({ connected: true });
+        peer.on('call', async call => {
+            await this.setState({ connected: true });
             call.answer(localStream)
             call.on('stream', remoteStream => {
-                this.remoteVideo.srcObject = remoteStream
+                this.remoteVideo.srcObject = remoteStream;
+                this.localVideo.srcObject = localStream;
             })
         })
         peer.on('error', (err) => {
@@ -159,6 +160,7 @@ class Main extends Component {
     }
 
     handleClick() {
+        this.initLocalVideo();
         const peer = this.state.peer;
         const conn = peer.connect(this.state.peerToConnect);
         conn.on('open', () => {
@@ -174,8 +176,9 @@ class Main extends Component {
         });
         const call = peer.call(this.state.peerToConnect, localStream)
         call.on('stream', async (remoteStream) => {
-            await this.setState({ connected: true });
+            this.setState({ connected: true });
             this.remoteVideo.srcObject = remoteStream
+            this.localVideo.srcObject = localStream;
         })
     }
 
@@ -194,13 +197,20 @@ class Main extends Component {
                 </div>
                 <Container fluid style={{ paddingLeft: '4%', paddingRight: '4%' }}>
                     {
-                        !!this.state.peer && (this.state.connection ? '' :
+                        !!this.state.peer && (this.state.connection ? (
+                            <>
+                                <Row>
+                                    <video id="remoteVideo" className='inCallVideoRemote' ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>
+                                    <video className='inCallLocalVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted></video>
+                                </Row>
+                            </>
+                        ) :
                             (<div>
                                 <Row>
                                     <Col xs="6" sm="6" md="6" lg="6" >
                                         <div className="introVideo">
                                             <div className='homeVideo' style={{ backgroundColor: 'black', borderRadius: '6%' }}>
-                                                <video className='homeVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay src={localStream} muted></video>
+                                                <video className='homeVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted></video>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 <Button className="introControls" onClick={this.handleVideoToggle}>Video {this.state.videoOn ? ' Off' : ' On'}</Button>{' '}
@@ -223,7 +233,7 @@ class Main extends Component {
                                                             <Form.Label>Enter meeting id to join</Form.Label>
                                                             <Form.Control type="text" placeholder="Meeting id" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect" />
                                                         </Form.Group>
-                                                        <Button variant="primary" type="submit">
+                                                        <Button onClick={this.handleClick} variant="primary" type="button">
                                                             Submit
                                                 </Button>
                                                     </Form>
