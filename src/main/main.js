@@ -197,7 +197,7 @@ class Main extends Component {
                 </div>
                 <Container fluid style={{ paddingLeft: this.state.connected ? '0%' : '4%', paddingRight: this.state.connected ? '0%' : '4%' }}>
                     {
-                        !!this.state.peer && (this.state.connection ? (
+                        !!this.state.peer && ((this.state.connection || this.state.connected) ? (
                             <>
                                 <Row>
                                     <video id="remoteVideo" className='inCallVideoRemote' ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>
