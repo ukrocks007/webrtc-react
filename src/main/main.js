@@ -195,7 +195,7 @@ class Main extends Component {
                         </Navbar.Brand>
                     </Navbar>
                 </div>
-                <Container fluid style={{ paddingLeft: '4%', paddingRight: '4%' }}>
+                <Container fluid style={{ paddingLeft: this.state.connected ? '0%' : '4%', paddingRight: this.state.connected ? '0%' : '4%' }}>
                     {
                         !!this.state.peer && (this.state.connection ? (
                             <>
@@ -209,7 +209,7 @@ class Main extends Component {
                                 <Row>
                                     <Col xs="6" sm="6" md="6" lg="6" >
                                         <div className="introVideo">
-                                            <div className='homeVideo' style={{ backgroundColor: 'black', borderRadius: '6%' }}>
+                                            <div className='homeVideoContainer' style={{ backgroundColor: 'black', borderRadius: '6%' }}>
                                                 <video className='homeVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted></video>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
