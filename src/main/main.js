@@ -2,12 +2,8 @@ import React, { Component } from 'react'
 import Peer from 'peerjs';
 import RandonString from 'randomstring'
 import { Container, Row, Col, Navbar, Button, Form } from 'react-bootstrap';
-// npm install --save-dev @iconify/react @iconify/icons-logos
-import { Icon, InlineIcon } from '@iconify/react';
-import webrtcIcon from '@iconify/icons-logos/webrtc';
 
 let localStream;
-
 class Main extends Component {
 
     constructor(props) {
@@ -23,7 +19,8 @@ class Main extends Component {
             videoOn: true,
             audioOn: true,
             peerServerPath: '',
-            port: ''
+            port: '',
+            streams: []
         }
         this.handleClick = this.handleClick.bind(this);
         this.updateUserPeerId = this.updateUserPeerId.bind(this);
@@ -61,8 +58,14 @@ class Main extends Component {
         peer.on('call', async call => {
             await this.setState({ connected: true });
             call.answer(localStream)
-            call.on('stream', remoteStream => {
-                this.remoteVideo.srcObject = remoteStream;
+            call.on('stream', async remoteStream => {
+                if (!this.state.streams.includes(remoteStream)) {
+                    await this.setState({
+                        streams: [...this.state.streams, remoteStream]
+                    })
+                }
+                this.remoteVideo.srcObject = this.state.streams.length >= 1 ? this.state.streams[0] : null;
+                //this.remoteVideo1.srcObject = this.state.streams.length >= 2 ? this.state.streams[1] : null;
                 this.localVideo.srcObject = localStream;
             })
         })
@@ -177,7 +180,13 @@ class Main extends Component {
         const call = peer.call(this.state.peerToConnect, localStream)
         call.on('stream', async (remoteStream) => {
             this.setState({ connected: true });
-            this.remoteVideo.srcObject = remoteStream
+            if (!this.state.streams.includes(remoteStream)) {
+                await this.setState({
+                    streams: [...this.state.streams, remoteStream]
+                })
+            }
+            this.remoteVideo.srcObject = this.state.streams.length >= 1 ? this.state.streams[0] : null;
+            //this.remoteVideo1.srcObject = this.state.streams.length >= 2 ? this.state.streams[1] : null;
             this.localVideo.srcObject = localStream;
         })
     }
@@ -185,7 +194,7 @@ class Main extends Component {
     render() {
         return (
             <div>
-                <div>
+                <div style={{ position: this.state.connection || this.state.connected ? 'fixed' : 'sticky', zIndex: 100 }}>
                     <Navbar sticky="top">
                         {/* <Navbar.Brand> */}
                         <img src={this.props.logo}
@@ -198,9 +207,24 @@ class Main extends Component {
                     {
                         !!this.state.peer && ((this.state.connection || this.state.connected) ? (
                             <>
-                                <Row>
-                                    <video id="remoteVideo" className='inCallVideoRemote' ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>
-                                    <video className='inCallLocalVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted></video>
+                                <Row noGutters={true}>
+                                    <Col xs="9" sm="9" md="9" lg="9" >
+                                        <div class="video-container">
+                                            <video id="remoteVideo" className='inCallVideoRemote' ref={remoteVideo => { this.remoteVideo = remoteVideo }} autoPlay></video>
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <Row>
+                                            <video className='inCallLocalVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted ></video>
+                                        </Row>
+                                        {/* {this.state.streams.map((value, index) => {
+                                            return (index > 0 && <Row>
+                                                <video className='inCallLocalVideo' ref={remoteVid => { this['remoteVideo' + index] = remoteVid }} autoPlay ></video>
+                                            </Row>);
+
+                                        })} */}
+
+                                    </Col>
                                 </Row>
                             </>
                         ) :
