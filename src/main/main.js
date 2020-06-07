@@ -186,13 +186,12 @@ class Main extends Component {
         return (
             <div>
                 <div>
-                    <Navbar bg="secondary" variant="light" sticky="top" >
-                        <Navbar.Brand href="#home">
-                            <Icon icon={webrtcIcon} width="30"
-                                height="30"
-                                className="d-inline-block align-top" />{' '}
-                            WebRTC Based Video Calls
-                        </Navbar.Brand>
+                    <Navbar sticky="top">
+                        {/* <Navbar.Brand> */}
+                        <img src={this.props.logo}
+                            width="150"
+                            className="d-inline-block align-top" />{' '}
+                        {/* </Navbar.Brand> */}
                     </Navbar>
                 </div>
                 <Container fluid style={{ paddingLeft: this.state.connected ? '0%' : '4%', paddingRight: this.state.connected ? '0%' : '4%' }}>
