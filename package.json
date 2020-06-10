@@ -16,6 +16,7 @@
         "react": "^16.13.1",
         "react-bootstrap": "^1.0.1",
         "react-dom": "^16.13.1",
+        "react-query-params": "^1.0.9",
         "react-scripts": "3.4.1",
         "simple-peer": "^9.7.2",
         "socket.io": "^2.3.0"

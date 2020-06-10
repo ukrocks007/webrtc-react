@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import Peer from 'peerjs';
 import RandonString from 'randomstring'
-import { Container, Row, Col, Navbar, Button, InputGroup, FormControl } from 'react-bootstrap';
-
+import { Container, Row, Col, Navbar, Button, InputGroup, FormControl, Alert } from 'react-bootstrap';
+import ReactQueryParams from 'react-query-params';
 let localStream;
-class Main extends Component {
+class Main extends ReactQueryParams {
 
     constructor(props) {
         super(props);
@@ -71,11 +71,18 @@ class Main extends Component {
             })
         })
         peer.on('error', (err) => {
+            //alert.error("You just broke something!");
             console.log(err);
-            this.setState({ connected: false });
+            this.setState({ connected: false, localStreamError: true });
         });
         await this.setState({ peer: peer });
-        this.initLocalVideo();
+        await this.initLocalVideo();
+        if (this.queryParams.join) {
+            await this.setState({
+                peerToConnect: this.queryParams.join
+            });
+            this.handleClick();
+        }
     }
 
     async initPeerConnectionAuto() {
@@ -286,7 +293,13 @@ class Main extends Component {
                                                         </Button>
                                                         </InputGroup.Append>
                                                     </InputGroup>
-
+                                                    <br />
+                                                    <Alert variant="danger" show={this.state.localStreamError} onClose={() => this.setState({ localStreamError: false })} dismissible>
+                                                        <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
+                                                        <p>
+                                                            The meeting id you are trying to connect is not valid.
+                                                        </p>
+                                                    </Alert>
                                                 </center>
                                             </Col>
                                             <Col className="stubCol2" xs="1" sm="1" md="2" lg="3"></Col>
