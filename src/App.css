@@ -1,3 +1,175 @@
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .introVideo {
+        margin-top: 2%;
+    }
+
+    .homeVideo {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        border-radius: 5%;
+        min-height: 100%;
+        max-width: 100%;
+        /* min-width: 20%; */
+    }
+
+    .homeVideoContainer {
+        /* height: 480px;
+        width: 640px; */
+    }
+
+    .stubCol1 {
+        display: none;
+    }
+
+    .stubCol2 {
+        display: none;
+    }
+
+    .introMId {
+        padding: 3%;
+    }
+
+    .introForm {
+        padding-bottom: 15%;
+        margin-bottom: 5%;
+    }
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    .introVideo {
+        margin-top: 3%;
+    }
+
+    .homeVideo {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        border-radius: 5%;
+        min-height: 100%;
+        max-width: 100%;
+    }
+
+    .homeVideoContainer {
+        /* height: 480px;
+        width: 640px; */
+    }
+
+    .stubCol1 {
+        display: none;
+    }
+
+    .stubCol2 {
+        display: none;
+    }
+
+    .introMId {
+        padding: 3%;
+    }
+
+    .introForm {
+        padding-bottom: 15%;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .introVideo {
+        margin-top: 10%;
+    }
+
+    .homeVideo {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        /* height: 480px;
+        width: 640px; */
+        border-radius: 5%;
+        min-width: 20%;
+    }
+
+    .homeVideoContainer {
+        /* height: 480px;
+        width: 640px; */
+    }
+
+    .stubCol1 {
+        display: none;
+    }
+
+    .stubCol2 {
+        display: none;
+    }
+
+    .introMId {
+        padding: 3%;
+    }
+
+    .introForm {
+        padding-bottom: 15%;
+    }
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .introVideo {
+        /* float: right; */
+        margin-top: 10%;
+    }
+
+    .homeVideo {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        border-radius: 5%;
+        min-height: 100%;
+        max-width: 100%;
+    }
+
+    .homeVideoContainer {
+        /* height: 480px;
+        width: 640px; */
+    }
+
+    .introMId {
+        margin-top: 20%;
+        padding: 3%;
+    }
+
+    .introForm {
+        padding: 3%;
+    }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .introVideo {
+        /* float: right; */
+        margin-top: 10%;
+    }
+
+    .homeVideo {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        height: 480px;
+        width: 640px;
+        border-radius: 5%;
+        min-width: 20%;
+    }
+
+    .homeVideoContainer {
+        /* height: 480px;
+        width: 640px; */
+    }
+
+    .introMId {
+        margin-top: 20%;
+        padding: 3%;
+    }
+
+    .introForm {
+        padding: 3%;
+    }
+}
+
 .App {
     text-align: center;
 }
@@ -34,36 +206,8 @@ video {
     width: calc(100% + 2px);
 }
 
-.introMId {
-    margin-top: 20%;
-    padding: 3%;
-}
-
-.introForm {
-    padding: 3%;
-}
-
-.introVideo {
-    float: right;
-    margin-top: 10%;
-}
-
 .introControls {
     margin: 2%;
-}
-
-.homeVideoContainer {
-    height: 480px;
-    width: 640px;
-}
-
-.homeVideo {
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-    height: 480px;
-    width: 640px;
-    border-radius: 5%;
-    min-width: 20%;
 }
 
 .App-logo {

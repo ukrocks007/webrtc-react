@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Peer from 'peerjs';
 import RandonString from 'randomstring'
-import { Container, Row, Col, Navbar, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Button, InputGroup, FormControl } from 'react-bootstrap';
 
 let localStream;
 class Main extends Component {
@@ -20,7 +20,8 @@ class Main extends Component {
             audioOn: true,
             peerServerPath: '',
             port: '',
-            streams: []
+            streams: [],
+            localStreamError: false
         }
         this.handleClick = this.handleClick.bind(this);
         this.updateUserPeerId = this.updateUserPeerId.bind(this);
@@ -132,19 +133,20 @@ class Main extends Component {
                         getUserMedia.call(navigator, constraints, resolve, reject);
                     });
                 }
-            }
-
-            if (this.state.videoOn || this.state.audioOn) {
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    video: this.state.videoOn, audio: this.state.audioOn
-                })
             } else {
-                localStream = null;
+                if (this.state.videoOn || this.state.audioOn) {
+                    localStream = await navigator.mediaDevices.getUserMedia({
+                        video: this.state.videoOn, audio: this.state.audioOn
+                    })
+                } else {
+                    localStream = null;
+                }
+                this.localVideo.srcObject = localStream;
+                this.setState({ webCamON: true });
             }
-            this.localVideo.srcObject = localStream;
-            this.setState({ webCamON: true });
         } catch (ex) {
-            console.log(ex);
+            this.setState({ localStreamError: true })
+            console.log("Unable to init local stream", ex);
         }
     }
 
@@ -245,11 +247,16 @@ class Main extends Component {
                         ) :
                             (<div>
                                 <Row>
-                                    <Col xs="6" sm="6" md="6" lg="6" >
+                                    <Col xs="12" sm="12" md="12" lg="6" >
                                         <div className="introVideo">
-                                            <div className='homeVideoContainer' style={{ backgroundColor: 'black', borderRadius: '6%' }}>
-                                                <video className='homeVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted></video>
-                                            </div>
+                                            <center>
+                                                <div className='homeVideoContainer' style={{ backgroundColor: (this.state.videoOn && !this.state.localStreamError) ? 'transparent' : 'black', borderRadius: '6%' }}>
+                                                    <center>
+                                                        <video className='homeVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted>
+                                                        </video>
+                                                    </center>
+                                                </div>
+                                            </center>
                                             <div style={{ display: 'flex', justifyContent: 'center' }}>
                                                 <Button className="introControls" onClick={this.handleVideoToggle}>Video {this.state.videoOn ? ' Off' : ' On'}</Button>{' '}
                                                 <Button className="introControls" onClick={this.handleAudioToggle}>Audio {this.state.audioOn ? ' Off' : ' On'}</Button>
@@ -263,21 +270,35 @@ class Main extends Component {
                                         </Row>
                                         <center><hr />Or</center>
                                         <Row className="introForm">
-                                            <Col></Col>
+                                            <Col className="stubCol1"></Col>
                                             <Col>
                                                 <center>
-                                                    <Form>
+                                                    {/* <Form>
                                                         <Form.Group controlId="formBasicEmail">
                                                             <Form.Label>Enter meeting id to join</Form.Label>
                                                             <Form.Control type="text" placeholder="Meeting id" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect" />
                                                         </Form.Group>
                                                         <Button onClick={this.handleClick} variant="primary" type="button">
                                                             Submit
-                                                </Button>
-                                                    </Form>
+                                                        </Button>
+                                                    </Form> */}
+                                                    <InputGroup>
+                                                        <FormControl
+                                                            placeholder="Enter meeting id to join"
+                                                            aria-label="Meeting Id"
+                                                            aria-describedby="basic-addon2"
+                                                            value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect"
+                                                        />
+                                                        <InputGroup.Append>
+                                                            <Button onClick={this.handleClick} variant="primary" type="button">
+                                                                Submit
+                                                        </Button>
+                                                        </InputGroup.Append>
+                                                    </InputGroup>
+
                                                 </center>
                                             </Col>
-                                            <Col></Col>
+                                            <Col className="stubCol2" ></Col>
                                             {/* <center>
                                                 <h5>Enter meeting id to join:
                                                     <input type="text" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect">
