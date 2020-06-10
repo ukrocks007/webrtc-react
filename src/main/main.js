@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Peer from 'peerjs';
 import RandonString from 'randomstring'
-import { Container, Row, Col, Navbar, Button, InputGroup, FormControl, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Button, InputGroup, FormControl, Alert, Spinner } from 'react-bootstrap';
 import ReactQueryParams from 'react-query-params';
 let localStream;
 class Main extends ReactQueryParams {
@@ -23,6 +23,7 @@ class Main extends ReactQueryParams {
             streams: [],
             localStreamError: false,
             invalidMeetingId: false,
+            meetingLoader: false,
         }
         this.handleClick = this.handleClick.bind(this);
         this.updateUserPeerId = this.updateUserPeerId.bind(this);
@@ -48,17 +49,17 @@ class Main extends ReactQueryParams {
             conn.on('data', (data) => {
                 this.setState({ connection: conn });
                 console.log(data);
-                this.setState({ connected: true });
+                this.setState({ connected: true, meetingLoader: false });
             });
             conn.on('open', () => {
                 //this.initRemoteVideo();
                 this.setState({ connection: conn });
                 conn.send('hello!');
-                this.setState({ connected: true });
+                this.setState({ connected: true, meetingLoader: false });
             });
         });
         peer.on('call', async call => {
-            await this.setState({ connected: true });
+            await this.setState({ connected: true, meetingLoader: false });
             call.answer(localStream)
             call.on('stream', async remoteStream => {
                 if (!this.state.streams.includes(remoteStream)) {
@@ -74,7 +75,7 @@ class Main extends ReactQueryParams {
         peer.on('error', (err) => {
             //alert.error("You just broke something!");
             console.log(err);
-            this.setState({ connected: false, invalidMeetingId: true });
+            this.setState({ connected: false, invalidMeetingId: true, meetingLoader: false });
         });
         await this.setState({ peer: peer });
         await this.initLocalVideo();
@@ -153,7 +154,7 @@ class Main extends ReactQueryParams {
                 this.setState({ webCamON: true });
             }
         } catch (ex) {
-            this.setState({ localStreamError: true })
+            this.setState({ localStreamError: true, meetingLoader: false })
             console.log("Unable to init local stream", ex);
         }
     }
@@ -188,6 +189,9 @@ class Main extends ReactQueryParams {
     }
 
     handleClick() {
+        this.setState({
+            meetingLoader: true
+        });
         this.initLocalVideo();
         const peer = this.state.peer;
         const conn = peer.connect(this.state.peerToConnect);
@@ -195,12 +199,12 @@ class Main extends ReactQueryParams {
             //this.initRemoteVideo();
             this.setState({ connection: conn });
             conn.send('hi!');
-            this.setState({ connected: true });
+            this.setState({ connected: true, meetingLoader: false });
         });
         conn.on('data', (data) => {
             this.setState({ connection: conn });
             console.log(data);
-            this.setState({ connected: true });
+            this.setState({ connected: true, meetingLoader: false });
         });
         const call = peer.call(this.state.peerToConnect, localStream)
         call.on('stream', async (remoteStream) => {
@@ -295,6 +299,9 @@ class Main extends ReactQueryParams {
                                                         </InputGroup.Append>
                                                     </InputGroup>
                                                     <br />
+                                                    <Spinner style={{ display: this.state.meetingLoader ? 'block' : 'none' }} animation="border" role="status">
+                                                        <span className="sr-only">Loading...</span>
+                                                    </Spinner>
                                                     <Alert variant="danger" show={this.state.invalidMeetingId} onClose={() => this.setState({ invalidMeetingId: false })} dismissible>
                                                         <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
                                                         <p>
