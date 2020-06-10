@@ -216,7 +216,7 @@ class Main extends Component {
                         {/* <Navbar.Brand> */}
                         <img src={this.props.logo}
                             width="150"
-                            className="d-inline-block align-top" />{' '}
+                            className="d-inline-block align-top" alt="Meetster logo" />{' '}
                         {/* </Navbar.Brand> */}
                     </Navbar>
                 </div>
@@ -270,24 +270,15 @@ class Main extends Component {
                                         </Row>
                                         <center><hr />Or</center>
                                         <Row className="introForm">
-                                            <Col className="stubCol1"></Col>
+                                            <Col className="stubCol1" xs="1" sm="1" md="2" lg="3" ></Col>
                                             <Col>
                                                 <center>
-                                                    {/* <Form>
-                                                        <Form.Group controlId="formBasicEmail">
-                                                            <Form.Label>Enter meeting id to join</Form.Label>
-                                                            <Form.Control type="text" placeholder="Meeting id" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect" />
-                                                        </Form.Group>
-                                                        <Button onClick={this.handleClick} variant="primary" type="button">
-                                                            Submit
-                                                        </Button>
-                                                    </Form> */}
                                                     <InputGroup>
                                                         <FormControl
                                                             placeholder="Enter meeting id to join"
                                                             aria-label="Meeting Id"
                                                             aria-describedby="basic-addon2"
-                                                            value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect"
+                                                            value={this.state.peerToConnect} size="md" onChange={this.updateUserPeerId} name="peerToConnect"
                                                         />
                                                         <InputGroup.Append>
                                                             <Button onClick={this.handleClick} variant="primary" type="button">
@@ -298,7 +289,7 @@ class Main extends Component {
 
                                                 </center>
                                             </Col>
-                                            <Col className="stubCol2" ></Col>
+                                            <Col className="stubCol2" xs="1" sm="1" md="2" lg="3"></Col>
                                             {/* <center>
                                                 <h5>Enter meeting id to join:
                                                     <input type="text" value={this.state.peerToConnect} onChange={this.updateUserPeerId} name="peerToConnect">
