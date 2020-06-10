@@ -21,7 +21,8 @@ class Main extends ReactQueryParams {
             peerServerPath: '',
             port: '',
             streams: [],
-            localStreamError: false
+            localStreamError: false,
+            invalidMeetingId: false,
         }
         this.handleClick = this.handleClick.bind(this);
         this.updateUserPeerId = this.updateUserPeerId.bind(this);
@@ -73,7 +74,7 @@ class Main extends ReactQueryParams {
         peer.on('error', (err) => {
             //alert.error("You just broke something!");
             console.log(err);
-            this.setState({ connected: false, localStreamError: true });
+            this.setState({ connected: false, invalidMeetingId: true });
         });
         await this.setState({ peer: peer });
         await this.initLocalVideo();
@@ -294,7 +295,7 @@ class Main extends ReactQueryParams {
                                                         </InputGroup.Append>
                                                     </InputGroup>
                                                     <br />
-                                                    <Alert variant="danger" show={this.state.localStreamError} onClose={() => this.setState({ localStreamError: false })} dismissible>
+                                                    <Alert variant="danger" show={this.state.invalidMeetingId} onClose={() => this.setState({ invalidMeetingId: false })} dismissible>
                                                         <Alert.Heading>Oh snap! You got an error!</Alert.Heading>
                                                         <p>
                                                             The meeting id you are trying to connect is not valid.
