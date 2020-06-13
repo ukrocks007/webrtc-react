@@ -15,7 +15,7 @@ const port = process.env.PORT || 3001;
 
 var srv = app.listen(port, function () {
     console.log('Listening on ' + port)
-})
+});
 
 var peerJSServer = ExpressPeerServer(srv, {
     debug: true
