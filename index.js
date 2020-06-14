@@ -31,6 +31,9 @@ app.get("/api/admin/onlineUsers", (req, res) => {
 
 app.use('/chat', peerJSServer);
 
+app.use('/webrtc-react', express.static(path.join(__dirname, 'build')))
+app.use(express.static(path.join(__dirname, 'build')));
+
 peerJSServer.on('connection', function (peer) {
     stats.connected(peer.id);
     console.log(logInYellow, 'user with ' + peer.id + ' connected');
@@ -54,4 +57,12 @@ peerJSServer.on('message', function (peer, message) {
 
 peerJSServer.on('error', function (err) {
     console.log(err);
+});
+
+process.on('SIGTERM', () => {
+    console.info('SIGTERM signal received.');
+    console.log('Closing http server.');
+    srv.close(() => {
+        console.log('Http server closed.');
+    });
 });
