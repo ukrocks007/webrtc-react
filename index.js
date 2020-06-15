@@ -3,6 +3,8 @@ const path = require('path');
 var app = express()
 var morgan = require('morgan')
 
+// const timings = require('server-timings');
+
 const stats = require('./services/stats');
 
 const logInYellow = '\x1b[33m%s\x1b[0m';
@@ -21,6 +23,13 @@ var peerJSServer = ExpressPeerServer(srv, {
     debug: true
 });
 
+app.use('/chat', peerJSServer);
+
+app.use('/webrtc-react', express.static(path.join(__dirname, 'build')))
+app.use(express.static(path.join(__dirname, 'build')));
+
+// app.use(timings.start('routing'));
+
 app.get("/api/admin/onlineUsers", (req, res) => {
     try {
         res.status(200).json({ users: stats.getLiveUsers() });
@@ -29,10 +38,7 @@ app.get("/api/admin/onlineUsers", (req, res) => {
     }
 });
 
-app.use('/chat', peerJSServer);
-
-app.use('/webrtc-react', express.static(path.join(__dirname, 'build')))
-app.use(express.static(path.join(__dirname, 'build')));
+// app.use(timings.end('routing'));
 
 peerJSServer.on('connection', function (peer) {
     stats.connected(peer.id);

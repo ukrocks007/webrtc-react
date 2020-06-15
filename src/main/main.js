@@ -3,7 +3,7 @@ import Peer from 'peerjs';
 import RandonString from 'randomstring'
 import { Container, Row, Col, Navbar, Button, InputGroup, FormControl, Alert, Spinner } from 'react-bootstrap';
 import ReactQueryParams from 'react-query-params';
-let localStream;
+let localStream, calls = [];
 class Main extends ReactQueryParams {
 
     constructor(props) {
@@ -11,6 +11,7 @@ class Main extends ReactQueryParams {
         this.state = {
             mode: '',
             peer: '',
+            peerId: '',
             peerToConnect: '',
             connected: false,
             message: '',
@@ -20,10 +21,13 @@ class Main extends ReactQueryParams {
             audioOn: true,
             peerServerPath: '',
             port: '',
+            peers: [],
             streams: [],
+            connections: [],
             localStreamError: false,
             invalidMeetingId: false,
             meetingLoader: false,
+            isHost: true,
         }
         this.handleClick = this.handleClick.bind(this);
         this.updateUserPeerId = this.updateUserPeerId.bind(this);
@@ -41,11 +45,29 @@ class Main extends ReactQueryParams {
         this.initPeerConnectionAuto();
     }
 
+    componentDidUpdate() {
+        console.log("this.state.streams.length", this.state.streams.length);
+        for (let i = 1; i < this.state.streams.length; i++) {
+            console.log("Component exists", i, !!this["remoteVideo" + i]);
+            if (this.state.streams.length >= 2 && !!this["remoteVideo" + i] && this.state.isHost) {
+                console.log("remoteVideo added" + i);
+                this["remoteVideo" + i].srcObject = this.state.streams[i];
+            }
+        }
+    }
+
     async initPeerConnection() {
         console.log(this.state.peerServerPath, this.state.port);
-        var peer = new Peer(RandonString.generate(6), { host: this.state.peerServerPath, port: this.state.port, path: '/chat' });
-        peer.on('connection', (conn) => {
+        let myId = RandonString.generate(6);
+        this.setState({
+            peerId: myId
+        });
+        var peer = new Peer(myId, { host: this.state.peerServerPath, port: this.state.port, path: '/chat' });
+        peer.on('connection', async (conn) => {
             this.setState({ connection: conn });
+            await this.addConnection(conn);
+            await this.addPeer(conn.peer);
+            console.log("adding new peer to array", conn.peer);
             conn.on('data', (data) => {
                 this.setState({ connection: conn });
                 console.log(data);
@@ -54,7 +76,8 @@ class Main extends ReactQueryParams {
             conn.on('open', () => {
                 //this.initRemoteVideo();
                 this.setState({ connection: conn });
-                conn.send('hello!');
+                console.log("sending peer list", this.state.peers, "to", conn.peer);
+                conn.send(JSON.stringify({ peers: this.state.peers }));
                 this.setState({ connected: true, meetingLoader: false });
             });
         });
@@ -62,18 +85,12 @@ class Main extends ReactQueryParams {
             await this.setState({ connected: true, meetingLoader: false });
             call.answer(localStream)
             call.on('stream', async remoteStream => {
-                if (!this.state.streams.includes(remoteStream)) {
-                    await this.setState({
-                        streams: [...this.state.streams, remoteStream]
-                    })
-                }
+                await this.addStream(remoteStream);
                 this.remoteVideo.srcObject = this.state.streams.length >= 1 ? this.state.streams[0] : null;
-                //this.remoteVideo1.srcObject = this.state.streams.length >= 2 ? this.state.streams[1] : null;
                 this.localVideo.srcObject = localStream;
             })
         })
         peer.on('error', (err) => {
-            //alert.error("You just broke something!");
             console.log(err);
             this.setState({ connected: false, invalidMeetingId: true, meetingLoader: false });
         });
@@ -188,14 +205,70 @@ class Main extends ReactQueryParams {
         }
     }
 
+    async addPeer(peer) {
+        if (!this.state.peers.includes(peer) && peer != this.state.peerId) {
+            await this.setState({
+                peers: [...this.state.peers, peer]
+            })
+            if (this.state.isHost) {
+                let connections = this.state.connections || [];
+                for (let i = 0; i < connections.length; i++) {
+                    connections[i].send(JSON.stringify({ peers: this.state.peers }));
+                }
+            }
+        }
+    }
+
+    async addConnection(connection) {
+        if (!this.state.connections.includes(connection) && connection.perr != this.state.peerId) {
+            await this.setState({
+                connections: [...this.state.connections, connection]
+            })
+        }
+    }
+
+    async addPeers(peers) {
+        for (let i = 0; i < peers.length; i++) {
+            await this.addPeer(peers[i]);
+        }
+        if (!this.state.isHost) {
+            peers = this.state.peers;
+            calls = [];
+            for (let i = 0; i < peers.length; i++) {
+                if (peers[i] != this.state.peerToConnect) {
+                    console.log("Calling", peers[i]);
+                    const call = this.state.peer.call(peers[i], localStream);
+                    calls.push(call);
+                    calls[calls.length - 1].on('stream', async (remoteStream) => {
+                        console.log("Got new stream");
+                        this.setState({ connected: true });
+                        await this.addStream(remoteStream);
+                        //this.remoteVideo.srcObject = this.state.streams.length >= 1 ? this.state.streams[0] : null;
+                        this["remoteVideo" + i].srcObject = remoteStream;
+                        this.localVideo.srcObject = localStream;
+                    })
+                }
+            }
+        }
+    }
+
+    async addStream(remoteStream) {
+        if (!this.state.streams.includes(remoteStream)) {
+            await this.setState({
+                streams: [...this.state.streams, remoteStream]
+            })
+        }
+    }
+
     handleClick() {
         this.setState({
-            meetingLoader: true
+            meetingLoader: true, isHost: false
         });
         this.initLocalVideo();
         const peer = this.state.peer;
         const conn = peer.connect(this.state.peerToConnect);
-        conn.on('open', () => {
+        conn.on('open', async () => {
+            await this.addPeer(this.state.peerToConnect);
             //this.initRemoteVideo();
             this.setState({ connection: conn });
             conn.send('hi!');
@@ -203,17 +276,17 @@ class Main extends ReactQueryParams {
         });
         conn.on('data', (data) => {
             this.setState({ connection: conn });
-            console.log(data);
+            let peers = JSON.parse(data).peers;
+            console.log("Got peer list", peers);
+            this.addPeers(peers || []);
             this.setState({ connected: true, meetingLoader: false });
         });
+
+        //call begins here
         const call = peer.call(this.state.peerToConnect, localStream)
         call.on('stream', async (remoteStream) => {
             this.setState({ connected: true });
-            if (!this.state.streams.includes(remoteStream)) {
-                await this.setState({
-                    streams: [...this.state.streams, remoteStream]
-                })
-            }
+            await this.addStream(remoteStream);
             this.remoteVideo.srcObject = this.state.streams.length >= 1 ? this.state.streams[0] : null;
             //this.remoteVideo1.srcObject = this.state.streams.length >= 2 ? this.state.streams[1] : null;
             this.localVideo.srcObject = localStream;
@@ -246,12 +319,12 @@ class Main extends ReactQueryParams {
                                         <Row>
                                             <video className='inCallLocalVideo' ref={localVideo => { this.localVideo = localVideo }} id="localVideo" autoPlay muted ></video>
                                         </Row>
-                                        {/* {this.state.streams.map((value, index) => {
+                                        {this.state.streams.map((value, index) => {
                                             return (index > 0 && <Row>
-                                                <video className='inCallLocalVideo' ref={remoteVid => { this['remoteVideo' + index] = remoteVid }} autoPlay ></video>
+                                                <video className='inCallLocalVideo' id={'remoteVideo' + index} ref={remoteVid => { this['remoteVideo' + index] = remoteVid }} autoPlay ></video>
                                             </Row>);
 
-                                        })} */}
+                                        })}
 
                                     </Col>
                                 </Row>
