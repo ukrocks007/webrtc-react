@@ -46,18 +46,18 @@ class Main extends ReactQueryParams {
     }
 
     componentDidUpdate() {
-        console.log("this.state.streams.length", this.state.streams.length);
+        //console.log("this.state.streams.length", this.state.streams.length);
         for (let i = 1; i < this.state.streams.length; i++) {
-            console.log("Component exists", i, !!this["remoteVideo" + i]);
+            //console.log("Component exists", i, !!this["remoteVideo" + i]);
             if (this.state.streams.length >= 2 && !!this["remoteVideo" + i] && this.state.isHost) {
-                console.log("remoteVideo added" + i);
+                //console.log("remoteVideo added" + i);
                 this["remoteVideo" + i].srcObject = this.state.streams[i];
             }
         }
     }
 
     async initPeerConnection() {
-        console.log(this.state.peerServerPath, this.state.port);
+        //console.log(this.state.peerServerPath, this.state.port);
         let myId = RandonString.generate(6);
         this.setState({
             peerId: myId
@@ -67,16 +67,16 @@ class Main extends ReactQueryParams {
             this.setState({ connection: conn });
             await this.addConnection(conn);
             await this.addPeer(conn.peer);
-            console.log("adding new peer to array", conn.peer);
+            //console.log("adding new peer to array", conn.peer);
             conn.on('data', (data) => {
                 this.setState({ connection: conn });
-                console.log(data);
+                //console.log(data);
                 this.setState({ connected: true, meetingLoader: false });
             });
             conn.on('open', () => {
                 //this.initRemoteVideo();
                 this.setState({ connection: conn });
-                console.log("sending peer list", this.state.peers, "to", conn.peer);
+                //console.log("sending peer list", this.state.peers, "to", conn.peer);
                 conn.send(JSON.stringify({ peers: this.state.peers }));
                 this.setState({ connected: true, meetingLoader: false });
             });
@@ -91,7 +91,7 @@ class Main extends ReactQueryParams {
             })
         })
         peer.on('error', (err) => {
-            console.log(err);
+            //console.log(err);
             this.setState({ connected: false, invalidMeetingId: true, meetingLoader: false });
         });
         await this.setState({ peer: peer });
@@ -172,7 +172,7 @@ class Main extends ReactQueryParams {
             }
         } catch (ex) {
             this.setState({ localStreamError: true, meetingLoader: false })
-            console.log("Unable to init local stream", ex);
+            //console.log("Unable to init local stream", ex);
         }
     }
 
@@ -236,11 +236,11 @@ class Main extends ReactQueryParams {
             calls = [];
             for (let i = 0; i < peers.length; i++) {
                 if (peers[i] != this.state.peerToConnect) {
-                    console.log("Calling", peers[i]);
+                    //console.log("Calling", peers[i]);
                     const call = this.state.peer.call(peers[i], localStream);
                     calls.push(call);
                     calls[calls.length - 1].on('stream', async (remoteStream) => {
-                        console.log("Got new stream");
+                        //console.log("Got new stream");
                         this.setState({ connected: true });
                         await this.addStream(remoteStream);
                         //this.remoteVideo.srcObject = this.state.streams.length >= 1 ? this.state.streams[0] : null;
@@ -277,7 +277,7 @@ class Main extends ReactQueryParams {
         conn.on('data', (data) => {
             this.setState({ connection: conn });
             let peers = JSON.parse(data).peers;
-            console.log("Got peer list", peers);
+            //console.log("Got peer list", peers);
             this.addPeers(peers || []);
             this.setState({ connected: true, meetingLoader: false });
         });
