@@ -56,7 +56,7 @@ peerJSServer.on('message', function (peer, message) {
             stats.heartbeat(peer.id);
         }
         else {
-            console.log(logInYellow, 'user with ' + peer.id + ' streaming data ' + JSON.stringify(message));
+            console.log(logInYellow, 'user with ' + peer.id + ' streaming data ');
         }
     }
 });
